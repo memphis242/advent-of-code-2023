@@ -107,4 +107,13 @@ total = 0
 for game_id in possible_games:
    total = total + game_id
 
-print(total)
+# sum of power of min-sets
+sum_of_powers_of_min_sets = 0
+for game_max_dict in game_color_maxes:
+   # the min-set of each game is just the max of each color of each game.
+   # the power of this game then is the product of these maxes. easy!
+   power_of_game = game_max_dict['red'] * game_max_dict['green'] * game_max_dict['blue']
+   sum_of_powers_of_min_sets = sum_of_powers_of_min_sets + power_of_game
+
+print(f'Sum of Possible Game IDs:\t{total}')
+print(f'Sum of Powers of Min-Sets:\t{sum_of_powers_of_min_sets}')
