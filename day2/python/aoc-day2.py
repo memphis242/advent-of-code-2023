@@ -1,0 +1,3 @@
+# TODO: Update to be relative path and configure debugger's working directory to here so you can debug with file inputs...
+PUZZLE_INPUT = 'C:/git/aoc/advent-of-code-2023/day2/python/day2-puzzle-input.txt'
+
