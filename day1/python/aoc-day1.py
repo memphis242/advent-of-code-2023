@@ -1,20 +1,5 @@
 PUZZLE_INPUT = 'C:/git/aoc/advent-of-code-2023/day1/python/puzzle-input.txt'
 
-# REMEMBER TO TO-LOWERCASE!
-DIGITS_SPELLED_OUT = \
-[                    \
-   'zero',           \
-   'one',            \
-   'two',            \
-   'three',          \
-   'four',           \
-   'five',           \
-   'six',            \
-   'seven',          \
-   'eight',          \
-   'nine'            \
-]
-
 DIGIT_DICTIONARY =   \
 {
    'z': ['zero'],
@@ -84,6 +69,8 @@ for line in puzzle_input_lines:
                   check_string = line[ idx : -1 ] + line[-1]
                else:
                   check_string = line[ idx : (idx+spelled_digit_len) ]
+
+               check_string.lower() # _just_ in case there was capitalizing shenanigans...
                if check_string == spelled_digit:
                   last_digit_read = SPELLED_DIGIT_TO_NUM_MAP.get(spelled_digit, last_digit_read)
                   if first_digit == '':   # i.e., first digit still not found
