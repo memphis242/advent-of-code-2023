@@ -108,7 +108,7 @@ for line_idx,line in enumerate(puzzle_input_lines):
       # get list of lines before, current, and after, as applicable
       line_list = []
       for line_add_idx in range(line_idx-1, line_idx+2):
-         if line_add_idx < 0 or line_add_idx >= len(puzzle_input_lines)-1:
+         if line_add_idx < 0 or line_add_idx > len(puzzle_input_lines)-1:
             line_list.append([])
          else:
             line_list.append(puzzle_input_lines[line_add_idx].strip())
