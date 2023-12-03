@@ -65,97 +65,79 @@ for line_idx,line in enumerate(puzzle_input_lines):
             elif char_idx == ( len(line)-1 ):
                at_right_col = True
 
-            # set a reference cell to start from; NOTE! assuming we aren't at the border
+            # Set a reference cell to start from. This'll be top left of the current **char** adjacency (**not** digit adjacency)
+            # TODO: Maybe just use digit adjacency?
+            # NOTE! First digit and current char are the same.
             STARTING_COL = char_idx - 1
             STARTING_ROW = line_idx - 1
 
+            # TODO: Learn about passing around mutable lists/strings by reference in Python so you can function-this-out!!
+            # NOTE: Only append non-digits to the list; makes the following checks easier
+            # NOTE: The way the input is structured, you **can't** be _both_ at the left _and_ the right, or at the top _and_ the bottom.
+            #       I'll take advantage of that by not checking certain paths.
             if at_top_row == True:
-               if at_left_col == True:
-                  # we are at the top-left most part of the file
 
-                  if digit_idx == len(num_str)-1:   # if we are at the last digit
-                     # TODO: Learn about passing around mutable lists/strings by reference in Python so you can function-this-out!!
-                     # only append non-digits to the list; makes the following checks easier
-                     char_bottom       = puzzle_input_lines[STARTING_ROW+2][STARTING_COL+digit_idx+1]
-                     if not char_bottom.isdigit():
-                        adjacent_chars.append(char_bottom)
-                     
-                     # make sure there's another column to the right!
-                     num_of_chars_remaining_in_line = len(line) - (char_idx + len(num_str))
-                     if num_of_chars_remaining_in_line > 0:
-                        char_right        = puzzle_input_lines[STARTING_ROW+1][STARTING_COL+digit_idx+2]
-                        char_bottom_right = puzzle_input_lines[STARTING_ROW+2][STARTING_COL+digit_idx+2]
-                        if not char_right.isdigit():
-                           adjacent_chars.append(char_right)
-                        if not char_bottom_right.isdigit():
-                           adjacent_chars.append(char_bottom_right)
+               # if we are at the top-left or top-right most part of the file or mid-number
+               if at_left_col == True or at_right_col == True or ( at_left_col == False and at_right_col == False and digit_idx != (len(num_str)-1) and digit_idx != 0 ): 
+                  # check just bottom
+                  char_bottom       = puzzle_input_lines[STARTING_ROW+2][STARTING_COL+digit_idx+1]
+                  # only append non-digits to the list; makes the following checks easier
+                  # TODO: Learn about passing around mutable lists/strings by reference in Python so you can function-this-out!!
+                  if not char_bottom.isdigit():
+                     adjacent_chars.append(char_bottom)
 
-                  else:   # we are at first or middle digits
-                     # check just bottoms
-                     char_bottom       = puzzle_input_lines[STARTING_ROW+2][STARTING_COL+digit_idx+1]
-                     # only append non-digits to the list; makes the following checks easier
-                     # TODO: Learn about passing around mutable lists/strings by reference in Python so you can function-this-out!!
-                     if not char_bottom.isdigit():
-                        adjacent_chars.append(char_bottom)
+               elif digit_idx == 0: # first digit
+                  # check lefts and bottom
+                  char_left         = puzzle_input_lines[STARTING_ROW+1][STARTING_COL  ]
+                  char_bottom_left  = puzzle_input_lines[STARTING_ROW+2][STARTING_COL  ]
+                  char_bottom       = puzzle_input_lines[STARTING_ROW+2][STARTING_COL+1]
+                  # only append non-digits to the list; makes the following checks easier
+                  if not char_left.isdigit():
+                     adjacent_chars.append(char_left)
+                  if not char_bottom_left.isdigit():
+                     adjacent_chars.append(char_bottom_left)
+                  if not char_bottom.isdigit():
+                     adjacent_chars.append(char_bottom)
 
-               elif at_right_col == True:
-                  #
-
-               else:
-                  # we are at the top border, somewhere in the middle
-
-                  if digit_idx == len(num_str)-1:   # if we are at the last digit
-                     # TODO: Learn about passing around mutable lists/strings by reference in Python so you can function-this-out!!
-                     # only append non-digits to the list; makes the following checks easier
-                     char_bottom       = puzzle_input_lines[STARTING_ROW+2][STARTING_COL+digit_idx+1]
-                     if not char_bottom.isdigit():
-                        adjacent_chars.append(char_bottom)
-                     
-                     # make sure there's another column to the right!
-                     num_of_chars_remaining_in_line = len(line) - (char_idx + len(num_str))
-                     if num_of_chars_remaining_in_line > 0:
-                        char_right        = puzzle_input_lines[STARTING_ROW+1][STARTING_COL+digit_idx+2]
-                        char_bottom_right = puzzle_input_lines[STARTING_ROW+2][STARTING_COL+digit_idx+2]
-                        if not char_right.isdigit():
-                           adjacent_chars.append(char_right)
-                        if not char_bottom_right.isdigit():
-                           adjacent_chars.append(char_bottom_right)
-
-                  elif digit_idx == 0: # we are at the first digit
-                     # check left and bottom
-                     char_bottom       = puzzle_input_lines[STARTING_ROW+2][STARTING_COL+digit_idx+1]
-                     if not char_bottom.isdigit():
-                        adjacent_chars.append(char_bottom)
-                     char_left         = puzzle_input_lines[STARTING_ROW+1][STARTING_COL+digit_idx  ]
-                     if not char_left.isdigit():
-                        adjacent_chars.append(char_left)
-                     char_bottom_left  = puzzle_input_lines[STARTING_ROW+2][STARTING_COL+digit_idx  ]
-                     if not char_bottom_left.isdigit():
-                        adjacent_chars.append(char_bottom_left)
-
-                  else:   # we are at middle digits
-                     # check just bottoms
-                     char_bottom       = puzzle_input_lines[STARTING_ROW+2][STARTING_COL+digit_idx+1]
-                     # only append non-digits to the list; makes the following checks easier
-                     # TODO: Learn about passing around mutable lists/strings by reference in Python so you can function-this-out!!
-                     if not char_bottom.isdigit():
-                        adjacent_chars.append(char_bottom)
+               else: # we are at the top border, somewhere in the middle
+                  # get bottom and rights
+                  char_bottom       = puzzle_input_lines[STARTING_ROW+2][STARTING_COL+digit_idx+1]
+                  char_right        = puzzle_input_lines[STARTING_ROW+1][STARTING_COL+digit_idx+2]
+                  char_bottom_right = puzzle_input_lines[STARTING_ROW+2][STARTING_COL+digit_idx+2]
+                  if not char_bottom.isdigit():
+                     adjacent_chars.append(char_bottom)
+                  if not char_right.isdigit():
+                     adjacent_chars.append(char_right)
+                  if not char_bottom_right.isdigit():
+                     adjacent_chars.append(char_bottom_right)
 
             elif at_bottom_row == True:
-               if at_left_col == True:
-                  #
 
-               elif at_right_col == True:
-                  # 
+               # if we are at the bottom-left or bottom-right most part of the file or mid-number
+               if at_left_col == True or at_right_col == True or ( at_left_col == False and at_right_col == False and digit_idx != (len(num_str)-1) ): 
+                  # check just top
+                  char_top       = puzzle_input_lines[STARTING_ROW  ][STARTING_COL+digit_idx+1]
+                  # only append non-digits to the list; makes the following checks easier
+                  # TODO: Learn about passing around mutable lists/strings by reference in Python so you can function-this-out!!
+                  if not char_top.isdigit():
+                     adjacent_chars.append(char_top)
 
-               
-               else:
-                  #
-
+               else: # we are at the bottom border, somewhere in the middle
+                  # get top and rights
+                  char_top       = puzzle_input_lines[STARTING_ROW  ][STARTING_COL+digit_idx+1]
+                  char_right     = puzzle_input_lines[STARTING_ROW+1][STARTING_COL+digit_idx+2]
+                  char_top_right = puzzle_input_lines[STARTING_ROW  ][STARTING_COL+digit_idx+2]
+                  if not char_top.isdigit():
+                     adjacent_chars.append(char_top)
+                  if not char_right.isdigit():
+                     adjacent_chars.append(char_right)
+                  if not char_top_right.isdigit():
+                     adjacent_chars.append(char_top_right)
 
             else: # we are not along the border
+
                if digit_idx == 0:   # if we are at the first digit
-                  # check left 3 and top and bottom
+                  # check lefts and top and bottom
                   char_top_left     = puzzle_input_lines[STARTING_ROW  ][STARTING_COL  ]
                   char_left         = puzzle_input_lines[STARTING_ROW+1][STARTING_COL  ]
                   char_bottom_left  = puzzle_input_lines[STARTING_ROW+2][STARTING_COL  ]
@@ -174,24 +156,31 @@ for line_idx,line in enumerate(puzzle_input_lines):
                      adjacent_chars.append(char_bottom)
 
                elif digit_idx == len(num_str)-1:   # if we are at the last digit
-                  # check right 3 and top and bottom
+                  # check right 3 and top and top
                   char_top           = puzzle_input_lines[STARTING_ROW  ][STARTING_COL+digit_idx+1]
                   char_bottom        = puzzle_input_lines[STARTING_ROW+2][STARTING_COL+digit_idx+1]
                   char_top_right     = puzzle_input_lines[STARTING_ROW  ][STARTING_COL+digit_idx+2]
                   char_right         = puzzle_input_lines[STARTING_ROW+1][STARTING_COL+digit_idx+2]
                   char_bottom_right  = puzzle_input_lines[STARTING_ROW+2][STARTING_COL+digit_idx+2]
-                  adjacent_chars.append(char_top_right)
-                  adjacent_chars.append(char_right)
-                  adjacent_chars.append(char_bottom_right)
-                  adjacent_chars.append(char_top)
-                  adjacent_chars.append(char_bottom)
+                  if not char_top_right.isdigit():
+                     adjacent_chars.append(char_top_right)
+                  if not char_right.isdigit():
+                     adjacent_chars.append(char_right)
+                  if not char_top_right.isdigit():
+                     adjacent_chars.append(char_top_right)
+                  if not char_top.isdigit():
+                     adjacent_chars.append(char_top)
+                  if not char_bottom.isdigit():
+                     adjacent_chars.append(char_bottom)
 
                else:   # we are at a middle digit
                   # check just top and bottom
                   char_top           = puzzle_input_lines[STARTING_ROW  ][STARTING_COL+digit_idx+1]
                   char_bottom        = puzzle_input_lines[STARTING_ROW+2][STARTING_COL+digit_idx+1]
-                  adjacent_chars.append(char_top)
-                  adjacent_chars.append(char_bottom)
+                  if not char_top.isdigit():
+                     adjacent_chars.append(char_top)
+                  if not char_bottom.isdigit():
+                     adjacent_chars.append(char_bottom)
 
          # if the number of '.'s is less than the length of the adjacent chars list, then some of the chars must be other symbols
          # and we have ourselves a part number!
