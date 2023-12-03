@@ -67,23 +67,6 @@ with open(PUZZLE_INPUT, 'r') as puzzle_input:
 # TODO:  Since the idea of adjacency is involved here, I really think a graph where each node is one of the characters
 #        in the file, linked to its adjacent nodes, would be an idea here. Would like to explore that.
 
-
-# ### QUICK VERIFY
-# line_idx = 11
-# start_idx = 103
-# line = puzzle_input_lines[line_idx]
-# (next_num, loop_skip) = get_next_num_in_line_starting_at_idx(line, start_idx)
-# print((next_num, loop_skip))
-# line_list = []
-# for line_add_idx in range(line_idx-1, line_idx+2):
-#    if line_add_idx < 0 or line_add_idx >= len(puzzle_input_lines)-1:
-#       line_list.append([])
-#    else:
-#       line_list.append(puzzle_input_lines[line_add_idx])
-# adj_list = get_adjacency_list( line_list, start_idx+loop_skip+1-len(next_num), len(next_num) )
-# print(adj_list)
-
-
 # I am going to treat the puzzle input text file as a 2d grid which it just so happens to be.
 # This'll help me define adjacency.
 part_numbers = [] # will become a list of numbers
