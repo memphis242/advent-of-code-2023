@@ -87,10 +87,10 @@ with open(PUZZLE_INPUT, 'r') as puzzle_input:
 # I am going to treat the puzzle input text file as a 2d grid which it just so happens to be.
 # This'll help me define adjacency.
 part_numbers = [] # will become a list of numbers
-loop_skip_counter = 0
 for line_idx,line in enumerate(puzzle_input_lines):
 
    line = line.strip()
+   loop_skip_counter = 0
 
    for char_idx,char in enumerate(line):
 
@@ -111,7 +111,7 @@ for line_idx,line in enumerate(puzzle_input_lines):
          if line_add_idx < 0 or line_add_idx >= len(puzzle_input_lines)-1:
             line_list.append([])
          else:
-            line_list.append(puzzle_input_lines[line_add_idx])
+            line_list.append(puzzle_input_lines[line_add_idx].strip())
       adjacency_list = get_adjacency_list( line_list, char_idx+loop_skip_counter+1-len(num_str), len(num_str) )
       
       # check for special symbols and add part number if applicable
