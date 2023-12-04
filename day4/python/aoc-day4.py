@@ -12,7 +12,7 @@ WINNING_NUMBERS_START_COL = 10
 def get_next_num_in_line_starting_at_idx( line: str, start_idx: int ) -> Tuple[str, int]:
    # check for invalid start index
    if start_idx > (len(line)-1):
-      return ''
+      return ('', 0)
 
    chars_to_skip_over_afterwards = 0
    num_str = ''
@@ -60,9 +60,13 @@ for line_idx,line in enumerate(puzzle_input_lines):
    winning_numbers = []
    your_numbers = []
    active_list = winning_numbers
-   char_idx = WINNING_NUMBERS_START_COL
-   for sub_char_idx,char in enumerate(line[WINNING_NUMBERS_START_COL:]):
-      char_idx = char_idx + sub_char_idx
+   found_start = False
+   for char_idx,char in enumerate(line):
+      if found_start == False and char != ':':
+         continue
+      elif char == ':':
+         found_start = True
+         continue # skip over this colon character
 
       # skip some characters if applicable
       if loop_skip_counter > 0:
