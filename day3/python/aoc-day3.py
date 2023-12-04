@@ -140,47 +140,47 @@ with open(PUZZLE_INPUT, 'r') as puzzle_input:
 # print( get_gear_ratio( [ puzzle_input_lines[TEST_LINE_IDX-1], puzzle_input_lines[TEST_LINE_IDX], puzzle_input_lines[TEST_LINE_IDX+1] ], TEST_STAR_IDX ) )
 
 ######## PART ONE ##########
-# # I am going to treat the puzzle input text file as a 2d grid which it just so happens to be.
-# # This'll help me define adjacency.
-# part_numbers = [] # will become a list of numbers
-# for line_idx,line in enumerate(puzzle_input_lines):
-# 
-#    line = line.strip()
-#    loop_skip_counter = 0
-# 
-#    for char_idx,char in enumerate(line):
-# 
-#       # skip some characters if applicable
-#       if loop_skip_counter > 0:
-#          loop_skip_counter = loop_skip_counter - 1
-#          continue
-# 
-#       # find next number!
-#       (num_str, loop_skip_counter) = get_next_num_in_line_starting_at_idx( line, char_idx )
-#       if num_str == '':
-#          break # couldn't find a number so move on to next line!
-#       
-#       # get adjacency list
-#       # get list of lines before, current, and after, as applicable
-#       line_list = []
-#       for line_add_idx in range(line_idx-1, line_idx+2):
-#          if line_add_idx < 0 or line_add_idx > len(puzzle_input_lines)-1:
-#             line_list.append([])
-#          else:
-#             line_list.append(puzzle_input_lines[line_add_idx].strip())
-#       adjacency_list = get_adjacency_list( line_list, char_idx+loop_skip_counter+1-len(num_str), len(num_str) )
-#       
-#       # check for special symbols and add part number if applicable
-#       # if the number of '.'s is less than the length of the adjacent chars list, then some of the chars must be other symbols
-#       # and we have ourselves a part number! we've also skipped over digits in making the adj list, so they shouldn't affect this.
-#       if adjacency_list.count('.') < len(adjacency_list):
-#          part_numbers.append(int(num_str))
-# 
-# total = 0
-# for num in part_numbers:
-#    total = total + num
-# 
-# print(f'Sum of part numbers:\t{total}')
+# I am going to treat the puzzle input text file as a 2d grid which it just so happens to be.
+# This'll help me define adjacency.
+part_numbers = [] # will become a list of numbers
+for line_idx,line in enumerate(puzzle_input_lines):
+
+   line = line.strip()
+   loop_skip_counter = 0
+
+   for char_idx,char in enumerate(line):
+
+      # skip some characters if applicable
+      if loop_skip_counter > 0:
+         loop_skip_counter = loop_skip_counter - 1
+         continue
+
+      # find next number!
+      (num_str, loop_skip_counter) = get_next_num_in_line_starting_at_idx( line, char_idx )
+      if num_str == '':
+         break # couldn't find a number so move on to next line!
+      
+      # get adjacency list
+      # get list of lines before, current, and after, as applicable
+      line_list = []
+      for line_add_idx in range(line_idx-1, line_idx+2):
+         if line_add_idx < 0 or line_add_idx > len(puzzle_input_lines)-1:
+            line_list.append([])
+         else:
+            line_list.append(puzzle_input_lines[line_add_idx].strip())
+      adjacency_list = get_adjacency_list( line_list, char_idx+loop_skip_counter+1-len(num_str), len(num_str) )
+      
+      # check for special symbols and add part number if applicable
+      # if the number of '.'s is less than the length of the adjacent chars list, then some of the chars must be other symbols
+      # and we have ourselves a part number! we've also skipped over digits in making the adj list, so they shouldn't affect this.
+      if adjacency_list.count('.') < len(adjacency_list):
+         part_numbers.append(int(num_str))
+
+total = 0
+for num in part_numbers:
+   total = total + num
+
+print(f'Sum of part numbers:\t{total}')
 
 
 
@@ -198,7 +198,7 @@ for line_idx,line in enumerate(puzzle_input_lines):
          loop_skip_counter = loop_skip_counter - 1
          continue
 
-      # find next number!
+      # find next gear-ratio
       if char == '*':
          loop_skip_counter = 1 # skip next column
          line_list = []
