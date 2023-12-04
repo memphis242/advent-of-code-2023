@@ -1,5 +1,5 @@
 #################### ---IMPORTS--- #################### 
-from typing import Tuple
+from typing import Tuple, List
 
 
 # TODO: Update to be relative path and configure debugger's working directory to here so you can debug with file inputs...
@@ -26,14 +26,14 @@ def get_next_num_in_line_starting_at_idx( line: str, start_idx: int ) -> Tuple[s
       # iterate through digits until non-digit is found
       num_str = char
       check_idx = start_idx + char_idx + 1
-      if check_idx < len(line)-1:
+      if check_idx <= len(line)-1:
          check_char = line[check_idx]
       else:
          check_char = ''
       while check_char.isdigit():
          num_str = num_str + check_char
          check_idx = check_idx + 1
-         if check_idx < len(line)-1:
+         if check_idx <= len(line)-1:
             check_char = line[check_idx]
          else:
             break
@@ -52,6 +52,20 @@ def get_adjacency_list( line_list: list, start_idx: int, num_of_digits: int ) ->
          continue
       
       for char_idx in range(start_idx-1, start_idx+num_of_digits+1):  # look at every character between the column before and column after number
+         if char_idx < 0 or char_idx > len(row)-1 or row[char_idx].isdigit(): # skip over digits and indices that are out-of-bounds
+            continue
+         adjacency_list.append( row[char_idx] )
+
+   return adjacency_list
+
+def get_gears( line_list: list, star_idx: int ) -> list:
+   gears = []  # will be list of integers if applicable
+   # iterate row-by-row
+   for row in line_list:
+      if not row: # if row is empty (i.e., we are at a top of bottom border)
+         continue
+      
+      for char_idx in range(star_idx-1, star_idx+num_of_digits+1):  # look at every character between the column before and column after number
          if char_idx < 0 or char_idx > len(row)-1 or row[char_idx].isdigit(): # skip over digits and indices that are out-of-bounds
             continue
          adjacency_list.append( row[char_idx] )
