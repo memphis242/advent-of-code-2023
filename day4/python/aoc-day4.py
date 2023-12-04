@@ -51,9 +51,11 @@ with open(PUZZLE_INPUT, 'r') as puzzle_input:
    puzzle_input_lines = puzzle_input.readlines()
 
 card_values = [] # will become a list of numbers
-for line_idx,line in enumerate(puzzle_input_lines):
+original_num_of_cards = len(puzzle_input_lines)
+card_copies = dict.fromkeys(range(1,original_num_of_cards+1), 1)
+for card_idx,card in enumerate(puzzle_input_lines):
 
-   line = line.strip()
+   card = card.strip()
    loop_skip_counter = 0
 
    # get winning numbers list and your numbers list
@@ -61,7 +63,7 @@ for line_idx,line in enumerate(puzzle_input_lines):
    your_numbers = []
    active_list = winning_numbers
    found_start = False
-   for char_idx,char in enumerate(line):
+   for char_idx,char in enumerate(card):
       if found_start == False and char != ':':
          continue
       elif char == ':':
@@ -81,24 +83,37 @@ for line_idx,line in enumerate(puzzle_input_lines):
          active_list = your_numbers # switch reference over
 
       # find next number!
-      (num_str, loop_skip_counter) = get_next_num_in_line_starting_at_idx( line, char_idx )
+      (num_str, loop_skip_counter) = get_next_num_in_line_starting_at_idx( card, char_idx )
       if num_str == '':
-         break # couldn't find a number so move on to next line!
+         break # couldn't find a number so move on to next card!
       active_list.append(int(num_str))
 
    # compare the list of numbers and assign point to card
    card_points = 0
+   num_of_matches = 0
    for num in your_numbers:
       if num in winning_numbers:
+         num_of_matches = num_of_matches + 1
          if card_points == 0:
             card_points = 1
          else:
             card_points = card_points * 2
    card_values.append(card_points)
+   for copy in range(0, card_copies[card_idx + 1]):
+      for i in range(1,num_of_matches+1):
+         if (card_idx+i+1) > original_num_of_cards:
+            break    # can't go past end of table
+         card_copies[card_idx+i+1] = card_copies[card_idx+i+1] + 1
 
 # sum up points!
-total = 0
+total_points = 0
 for num in card_values:
-   total = total + num
+   total_points = total_points + num
 
-print(total)
+# sum of card copies
+num_of_card_copies = 0
+for key in card_copies.keys():
+   num_of_card_copies = num_of_card_copies + card_copies[key]
+
+print(f'Part 1: {total_points} card points')
+print(f'Part 2: {num_of_card_copies} number of card copies')
