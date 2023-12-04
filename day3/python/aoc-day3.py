@@ -12,7 +12,7 @@ PUZZLE_INPUT = 'C:/git/aoc/advent-of-code-2023/day3/python/day3-puzzle-input.txt
 def get_next_num_in_line_starting_at_idx( line: str, start_idx: int ) -> Tuple[str, int]:
    # check for invalid start index
    if start_idx > (len(line)-1):
-      return ''
+      return ('', 0)
 
    chars_to_skip_over_afterwards = 0
    num_str = ''
