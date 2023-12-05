@@ -1,5 +1,7 @@
 #################### ---IMPORTS--- #################### 
 from typing import Tuple, List
+import sys
+import time
 
 #################### --CONSTANTS-- #################### 
 # TODO: Update to be relative path and configure debugger's working directory to here so you can debug with file inputs...
@@ -94,12 +96,35 @@ def map_value( val: int, triple_list: list ) -> int:
 
    return mapped_val
 
+# Print iterations progress
+def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+        printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    # print(f'\r{prefix} |{bar}| {percent}% {suffix}', end = printEnd)
+    sys.stdout.write(f'\r{prefix} |{bar}| {percent}% {suffix}')
+    sys.stdout.flush()
+    # Print New Line on Complete
+    if iteration == total: 
+        print()
 #################### ----MAIN----- #################### 
 # TODO: create a ~~dictionary for each mapping~~ list of graphs that lays out the map from seed to location.
 # strategy: traverse directly from seed to location without creating every mapping first
 
-with open(TEST_INPUT, 'r') as puzzle_input:
-# with open(PUZZLE_INPUT, 'r') as puzzle_input:
+# with open(TEST_INPUT, 'r') as puzzle_input:
+with open(PUZZLE_INPUT, 'r') as puzzle_input:
    puzzle_input_lines = puzzle_input.readlines()
 
 # get list of initial seeds
@@ -128,6 +153,12 @@ for i in range(0,len(initial_seeds)):
    if i % 2 == 0:
       seed_ranges.append( (initial_seeds[i], initial_seeds[i+1]) )   # not going to bounds-check because we _should_ be guaranteed an even number of seeds
       skip_next = True
+
+# for the terminal, i'd like to print out my progress in mapping each seed. to do that, i want to know how many seeds there are to process
+num_of_seeds_to_process = 0
+for double in seed_ranges:
+   num_of_seeds_to_process += double[1]
+print(f'{num_of_seeds_to_process:,}')
 
 # first parse through file and create lists of triples that specify ranges
 MAPPINGS_START_LINE_IDX = 2
@@ -181,6 +212,8 @@ for seed in initial_seeds:
 # to at least save on memory complexity, i'll keep track of the min as i go along
 min_location = None
 min_location_seed = None
+num_of_seeds_processed = 0
+start_time = time.time()
 for seed_range in seed_ranges:
    # gotta iterate through every possible seed number in every range!
    for seed in range( seed_range[0], seed_range[0]+seed_range[1] ):
@@ -205,6 +238,10 @@ for seed_range in seed_ranges:
       elif min_location > location_val:
          min_location = location_val
          min_location_seed = seed
+      
+      num_of_seeds_processed += 1
+      updated_time = time.time() - start_time
+      printProgressBar( num_of_seeds_processed, num_of_seeds_to_process, prefix=f'{num_of_seeds_processed:,} seeds processed out of {num_of_seeds_to_process:,}', suffix=f'time passed: {updated_time}' )
 
 # find min of locations list; its index will be the same as the index of the seed that mapped to it
 minimum_location_part1 = min(locations_part1)
