@@ -97,8 +97,8 @@ def map_value( val: int, triple_list: list ) -> int:
 #################### ----MAIN----- #################### 
 # TODO: create a ~~dictionary for each mapping~~ list of graphs that lays out the map from seed to location.
 
-with open(TEST_INPUT, 'r') as puzzle_input:
-# with open(PUZZLE_INPUT, 'r') as puzzle_input:
+# with open(TEST_INPUT, 'r') as puzzle_input:
+with open(PUZZLE_INPUT, 'r') as puzzle_input:
    puzzle_input_lines = puzzle_input.readlines()
 
 # get list of initial seeds
@@ -116,9 +116,7 @@ for char_idx, char in enumerate(initial_seeds_line):
       continue
    initial_seeds.append(int(seed_num))
 
-print(initial_seeds)
-
-# strategy: traverse directly through the seed-to-location mapping instead of creating all the mappings first
+# strategy: traverse directly from seed to location without creating every mapping first
 
 # first parse through file and create lists of triples that specify ranges
 MAPPINGS_START_LINE_IDX = 2
@@ -174,47 +172,4 @@ minimum_location = min(locations)
 minimum_location_idx = locations.index(minimum_location) # NOTE! min may not be unique; this just returns first occurence i think
 seed_that_mapped_to_min = initial_seeds[minimum_location_idx]
 
-print(f'Part 1:\t\tMin Location: {minimum_location}, (Possible) Corresponding Seed: {seed_that_mapped_to_min}')
-
-# # this is probably inefficient because i only really care about the mapping between seed and location...
-# # also, i don't know how python implements the hashing function needed for dictionary mapping and how efficient that is...
-# seed_to_soil_map = dict.fromkeys(range(0,+1), 0)
-# soil_to_fertilizer_map = {}
-# fertilizer_to_water_map = {}
-# for line_idx,line in enumerate(puzzle_input_lines):
-# 
-#    line = line.strip()
-#    loop_skip_counter = 0
-# 
-#    # develop mappings indicated by line
-#    for char_idx,char in enumerate(card):
-# 
-#       # skip some characters if applicable
-#       if loop_skip_counter > 0:
-#          loop_skip_counter = loop_skip_counter - 1
-#          continue
-# 
-#       # skip over non-digits except for the vertical bar
-#       if not char.isdigit() and char != '|':
-#          continue
-# 
-#       # find next number!
-#       (num_str, loop_skip_counter) = get_next_num_in_line_starting_at_idx( card, char_idx )
-#       if num_str == '':
-#          break # couldn't find a number so move on to next card!
-#       active_list.append(int(num_str))
-# 
-#    # create location list from mappings
-# 
-# 
-#    # find min location
-# 
-# 
-# # sum up points!
-# total_points = 0
-# for num in card_values:
-#    total_points = total_points + num
-# 
-# print(f'Part 1: {total_points} card points')
-# print(f'Part 2: {num_of_card_copies} number of card copies')
-# 
+print(f'Part 1:\tMin Location: {minimum_location}, (Possible) Corresponding Seed: {seed_that_mapped_to_min}')
