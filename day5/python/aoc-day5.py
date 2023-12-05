@@ -96,9 +96,10 @@ def map_value( val: int, triple_list: list ) -> int:
 
 #################### ----MAIN----- #################### 
 # TODO: create a ~~dictionary for each mapping~~ list of graphs that lays out the map from seed to location.
+# strategy: traverse directly from seed to location without creating every mapping first
 
-# with open(TEST_INPUT, 'r') as puzzle_input:
-with open(PUZZLE_INPUT, 'r') as puzzle_input:
+with open(TEST_INPUT, 'r') as puzzle_input:
+# with open(PUZZLE_INPUT, 'r') as puzzle_input:
    puzzle_input_lines = puzzle_input.readlines()
 
 # get list of initial seeds
@@ -116,7 +117,17 @@ for char_idx, char in enumerate(initial_seeds_line):
       continue
    initial_seeds.append(int(seed_num))
 
-# strategy: traverse directly from seed to location without creating every mapping first
+# part 2: create list of doubles representing seed ranges to check
+seed_ranges = []  # list of doubles
+skip_next = False
+for i in range(0,len(initial_seeds)):
+   if skip_next:
+      skip_next = False
+      continue
+
+   if i % 2 == 0:
+      seed_ranges.append( (initial_seeds[i], initial_seeds[i+1]) )   # not going to bounds-check because we _should_ be guaranteed an even number of seeds
+      skip_next = True
 
 # first parse through file and create lists of triples that specify ranges
 MAPPINGS_START_LINE_IDX = 2
@@ -148,10 +159,9 @@ for line_idx, line in enumerate(puzzle_input_lines[MAPPINGS_START_LINE_IDX:]):
    mappings[active_idx].append( get_mapping_triple( line ) )
 
 # build list of locations
-locations = []
+locations_part1 = []
 for seed in initial_seeds:
-   # figure out what fertilizer this seed maps to
-   # see if this seed is within range of specific mapping or the soil number will just be the same
+   # map your way through!
    SEED_TO_SOIL_IDX           = 0
    SOIL_TO_FERTILIZER_IDX     = 1
    FERTILIZER_TO_WATER_IDX    = 2
@@ -165,11 +175,41 @@ for seed in initial_seeds:
    light_val      = map_value( water_val,       mappings[WATER_TO_LIGHT_IDX]        )
    temp_val       = map_value( light_val,       mappings[LIGHT_TO_TEMP_IDX]         )
    humidity_val   = map_value( temp_val,        mappings[TEMP_TO_HUMIDITY_IDX]      )
-   locations.append( map_value( humidity_val,   mappings[HUMIDITY_TO_LOCATION_IDX]  ) )
+   locations_part1.append( map_value( humidity_val,   mappings[HUMIDITY_TO_LOCATION_IDX]  ) )
+
+# i shouldn't build a list for part 2 since the ranges are absolutely massive
+# to at least save on memory complexity, i'll keep track of the min as i go along
+min_location = None
+min_location_seed = None
+for seed_range in seed_ranges:
+   # gotta iterate through every possible seed number in every range!
+   for seed in range( seed_range[0], seed_range[0]+seed_range[1] ):
+      # map your way through!
+      SEED_TO_SOIL_IDX           = 0
+      SOIL_TO_FERTILIZER_IDX     = 1
+      FERTILIZER_TO_WATER_IDX    = 2
+      WATER_TO_LIGHT_IDX         = 3
+      LIGHT_TO_TEMP_IDX          = 4
+      TEMP_TO_HUMIDITY_IDX       = 5
+      HUMIDITY_TO_LOCATION_IDX   = 6
+      soil_val       = map_value( seed,            mappings[SEED_TO_SOIL_IDX]          )
+      fertilizer_val = map_value( soil_val,        mappings[SOIL_TO_FERTILIZER_IDX]    )
+      water_val      = map_value( fertilizer_val,  mappings[FERTILIZER_TO_WATER_IDX]   )
+      light_val      = map_value( water_val,       mappings[WATER_TO_LIGHT_IDX]        )
+      temp_val       = map_value( light_val,       mappings[LIGHT_TO_TEMP_IDX]         )
+      humidity_val   = map_value( temp_val,        mappings[TEMP_TO_HUMIDITY_IDX]      )
+      location_val  = map_value( humidity_val,    mappings[HUMIDITY_TO_LOCATION_IDX]  )
+      if min_location == None:
+         min_location = location_val
+         min_location_seed = seed
+      elif min_location > location_val:
+         min_location = location_val
+         min_location_seed = seed
 
 # find min of locations list; its index will be the same as the index of the seed that mapped to it
-minimum_location = min(locations)
-minimum_location_idx = locations.index(minimum_location) # NOTE! min may not be unique; this just returns first occurence i think
-seed_that_mapped_to_min = initial_seeds[minimum_location_idx]
+minimum_location_part1 = min(locations_part1)
+minimum_location_part1_idx = locations_part1.index(minimum_location_part1) # NOTE! min may not be unique; this just returns first occurence i think
+seed_that_mapped_to_min_part1 = initial_seeds[minimum_location_part1_idx]
 
-print(f'Part 1:\tMin Location: {minimum_location}, (Possible) Corresponding Seed: {seed_that_mapped_to_min}')
+print(f'Part 1:\tMin Location: {minimum_location_part1}, (Possible) Corresponding Seed: {seed_that_mapped_to_min_part1}')
+print(f'Part 2:\tMin Location: {min_location}, (Possible) Corresponding Seed: {min_location_seed}')
