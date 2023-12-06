@@ -2,6 +2,7 @@
 from typing import Tuple, List
 import sys
 import time
+import multiprocessing
 
 #################### --CONSTANTS-- #################### 
 # TODO: Update to be relative path and configure debugger's working directory to here so you can debug with file inputs...
@@ -96,6 +97,48 @@ def map_value( val: int, triple_list: list ) -> int:
 
    return mapped_val
 
+def map_seed_to_location( seed: int, mappings: list) -> int:
+   # map your way through!
+   SEED_TO_SOIL_IDX           = 0
+   SOIL_TO_FERTILIZER_IDX     = 1
+   FERTILIZER_TO_WATER_IDX    = 2
+   WATER_TO_LIGHT_IDX         = 3
+   LIGHT_TO_TEMP_IDX          = 4
+   TEMP_TO_HUMIDITY_IDX       = 5
+   HUMIDITY_TO_LOCATION_IDX   = 6
+   soil_val       = map_value( seed,            mappings[SEED_TO_SOIL_IDX]          )
+   fertilizer_val = map_value( soil_val,        mappings[SOIL_TO_FERTILIZER_IDX]    )
+   water_val      = map_value( fertilizer_val,  mappings[FERTILIZER_TO_WATER_IDX]   )
+   light_val      = map_value( water_val,       mappings[WATER_TO_LIGHT_IDX]        )
+   temp_val       = map_value( light_val,       mappings[LIGHT_TO_TEMP_IDX]         )
+   humidity_val   = map_value( temp_val,        mappings[TEMP_TO_HUMIDITY_IDX]      )
+   location_val   = map_value( humidity_val,    mappings[HUMIDITY_TO_LOCATION_IDX]  )
+
+   return location_val
+
+# num_of_seeds_processed = 0
+# min_location_part_2 = None
+# def map_seed_to_location( seed: int ):
+#    # map your way through!
+#    SEED_TO_SOIL_IDX           = 0
+#    SOIL_TO_FERTILIZER_IDX     = 1
+#    FERTILIZER_TO_WATER_IDX    = 2
+#    WATER_TO_LIGHT_IDX         = 3
+#    LIGHT_TO_TEMP_IDX          = 4
+#    TEMP_TO_HUMIDITY_IDX       = 5
+#    HUMIDITY_TO_LOCATION_IDX   = 6
+#    soil_val       = map_value( seed,            mappings[SEED_TO_SOIL_IDX]          )
+#    fertilizer_val = map_value( soil_val,        mappings[SOIL_TO_FERTILIZER_IDX]    )
+#    water_val      = map_value( fertilizer_val,  mappings[FERTILIZER_TO_WATER_IDX]   )
+#    light_val      = map_value( water_val,       mappings[WATER_TO_LIGHT_IDX]        )
+#    temp_val       = map_value( light_val,       mappings[LIGHT_TO_TEMP_IDX]         )
+#    humidity_val   = map_value( temp_val,        mappings[TEMP_TO_HUMIDITY_IDX]      )
+#    location_val   = map_value( humidity_val,    mappings[HUMIDITY_TO_LOCATION_IDX]  )
+#    num_of_seeds_processed += 1
+# 
+#    if location_val < min_location_part2:
+#       min_location_part2 = location_val
+
 # Print iterations progress
 def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
     """
@@ -123,100 +166,77 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
 # TODO: create a ~~dictionary for each mapping~~ list of graphs that lays out the map from seed to location.
 # strategy: traverse directly from seed to location without creating every mapping first
 
-# with open(TEST_INPUT, 'r') as puzzle_input:
-with open(PUZZLE_INPUT, 'r') as puzzle_input:
-   puzzle_input_lines = puzzle_input.readlines()
+if __name__ == '__main__':
 
-# get list of initial seeds
-INITIAL_SEEDS_LINE_IDX = 0
-initial_seeds_line = puzzle_input_lines[INITIAL_SEEDS_LINE_IDX].strip()
-initial_seeds = []
-loop_skip_counter = 0
-for char_idx, char in enumerate(initial_seeds_line):
-   # skip characters if applicable
-   if loop_skip_counter > 0:
-      loop_skip_counter -= 1
-      continue
-   ( seed_num, loop_skip_counter ) = get_next_num_in_line_starting_at_idx( initial_seeds_line, char_idx )
-   if seed_num == '':
-      continue
-   initial_seeds.append(int(seed_num))
+   with open(TEST_INPUT, 'r') as puzzle_input:
+   # with open(PUZZLE_INPUT, 'r') as puzzle_input:
+      puzzle_input_lines = puzzle_input.readlines()
 
-# part 2: create list of doubles representing seed ranges to check
-seed_ranges = []  # list of doubles
-skip_next = False
-for i in range(0,len(initial_seeds)):
-   if skip_next:
-      skip_next = False
-      continue
+   # get list of initial seeds
+   INITIAL_SEEDS_LINE_IDX = 0
+   initial_seeds_line = puzzle_input_lines[INITIAL_SEEDS_LINE_IDX].strip()
+   initial_seeds = []
+   loop_skip_counter = 0
+   for char_idx, char in enumerate(initial_seeds_line):
+      # skip characters if applicable
+      if loop_skip_counter > 0:
+         loop_skip_counter -= 1
+         continue
+      ( seed_num, loop_skip_counter ) = get_next_num_in_line_starting_at_idx( initial_seeds_line, char_idx )
+      if seed_num == '':
+         continue
+      initial_seeds.append(int(seed_num))
 
-   if i % 2 == 0:
-      seed_ranges.append( (initial_seeds[i], initial_seeds[i+1]) )   # not going to bounds-check because we _should_ be guaranteed an even number of seeds
-      skip_next = True
+   # part 2: create list of doubles representing seed ranges to check
+   seed_ranges = []  # list of doubles
+   skip_next = False
+   for i in range(0,len(initial_seeds)):
+      if skip_next:
+         skip_next = False
+         continue
 
-# for the terminal, i'd like to print out my progress in mapping each seed. to do that, i want to know how many seeds there are to process
-num_of_seeds_to_process = 0
-for double in seed_ranges:
-   num_of_seeds_to_process += double[1]
-print(f'{num_of_seeds_to_process:,}')
+      if i % 2 == 0:
+         seed_ranges.append( (initial_seeds[i], initial_seeds[i+1]) )   # not going to bounds-check because we _should_ be guaranteed an even number of seeds
+         skip_next = True
 
-# first parse through file and create lists of triples that specify ranges
-MAPPINGS_START_LINE_IDX = 2
-mappings =                          \
-[                                   \
-   # TODO: define enum!
-   [], # 0 seeds_and_soils
-   [], # 1 soils_and_fertilizers
-   [], # 2 fertilizers_and_waters
-   [], # 3 waters_and_lights
-   [], # 4 lights_and_temps
-   [], # 5 temps_and_humidities
-   [], # 6 humidities_and_locations
-]
-active_idx = -1 # start /w seeds_and_soils
-for line_idx, line in enumerate(puzzle_input_lines[MAPPINGS_START_LINE_IDX:]):
-   line = line.strip()
+   # for the terminal, i'd like to print out my progress in mapping each seed. to do that, i want to know how many seeds there are to process
+   num_of_seeds_to_process = 0
+   for double in seed_ranges:
+      num_of_seeds_to_process += double[1]
+   print(f'{num_of_seeds_to_process:,}')
 
-   # skip over blank lines
-   if not line:
-      continue
+   # first parse through file and create lists of triples that specify ranges
+   MAPPINGS_START_LINE_IDX = 2
+   mappings =                          \
+   [                                   \
+      # TODO: define enum!
+      [], # 0 seeds_and_soils
+      [], # 1 soils_and_fertilizers
+      [], # 2 fertilizers_and_waters
+      [], # 3 waters_and_lights
+      [], # 4 lights_and_temps
+      [], # 5 temps_and_humidities
+      [], # 6 humidities_and_locations
+   ]
+   active_idx = -1 # start /w seeds_and_soils
+   for line_idx, line in enumerate(puzzle_input_lines[MAPPINGS_START_LINE_IDX:]):
+      line = line.strip()
 
-   # move to next list mapping if applicable and skip line
-   if ':' in line:
-      active_idx += 1
-      continue
+      # skip over blank lines
+      if not line:
+         continue
 
-   # get our triple!
-   mappings[active_idx].append( get_mapping_triple( line ) )
+      # move to next list mapping if applicable and skip line
+      if ':' in line:
+         active_idx += 1
+         continue
 
-# build list of locations
-locations_part1 = []
-for seed in initial_seeds:
-   # map your way through!
-   SEED_TO_SOIL_IDX           = 0
-   SOIL_TO_FERTILIZER_IDX     = 1
-   FERTILIZER_TO_WATER_IDX    = 2
-   WATER_TO_LIGHT_IDX         = 3
-   LIGHT_TO_TEMP_IDX          = 4
-   TEMP_TO_HUMIDITY_IDX       = 5
-   HUMIDITY_TO_LOCATION_IDX   = 6
-   soil_val       = map_value( seed,            mappings[SEED_TO_SOIL_IDX]          )
-   fertilizer_val = map_value( soil_val,        mappings[SOIL_TO_FERTILIZER_IDX]    )
-   water_val      = map_value( fertilizer_val,  mappings[FERTILIZER_TO_WATER_IDX]   )
-   light_val      = map_value( water_val,       mappings[WATER_TO_LIGHT_IDX]        )
-   temp_val       = map_value( light_val,       mappings[LIGHT_TO_TEMP_IDX]         )
-   humidity_val   = map_value( temp_val,        mappings[TEMP_TO_HUMIDITY_IDX]      )
-   locations_part1.append( map_value( humidity_val,   mappings[HUMIDITY_TO_LOCATION_IDX]  ) )
+      # get our triple!
+      mappings[active_idx].append( get_mapping_triple( line ) )
 
-# i shouldn't build a list for part 2 since the ranges are absolutely massive
-# to at least save on memory complexity, i'll keep track of the min as i go along
-min_location = None
-min_location_seed = None
-num_of_seeds_processed = 0
-start_time = time.time()
-for seed_range in seed_ranges:
-   # gotta iterate through every possible seed number in every range!
-   for seed in range( seed_range[0], seed_range[0]+seed_range[1] ):
+   # build list of locations
+   locations_part1 = []
+   for seed in initial_seeds:
       # map your way through!
       SEED_TO_SOIL_IDX           = 0
       SOIL_TO_FERTILIZER_IDX     = 1
@@ -231,22 +251,43 @@ for seed_range in seed_ranges:
       light_val      = map_value( water_val,       mappings[WATER_TO_LIGHT_IDX]        )
       temp_val       = map_value( light_val,       mappings[LIGHT_TO_TEMP_IDX]         )
       humidity_val   = map_value( temp_val,        mappings[TEMP_TO_HUMIDITY_IDX]      )
-      location_val  = map_value( humidity_val,    mappings[HUMIDITY_TO_LOCATION_IDX]  )
-      if min_location == None:
-         min_location = location_val
-         min_location_seed = seed
-      elif min_location > location_val:
-         min_location = location_val
-         min_location_seed = seed
-      
-      num_of_seeds_processed += 1
-      updated_time = time.time() - start_time
-      printProgressBar( num_of_seeds_processed, num_of_seeds_to_process, prefix=f'{num_of_seeds_processed:,} seeds processed out of {num_of_seeds_to_process:,}', suffix=f'time passed: {updated_time}' )
+      locations_part1.append( map_value( humidity_val,   mappings[HUMIDITY_TO_LOCATION_IDX]  ) )
 
-# find min of locations list; its index will be the same as the index of the seed that mapped to it
-minimum_location_part1 = min(locations_part1)
-minimum_location_part1_idx = locations_part1.index(minimum_location_part1) # NOTE! min may not be unique; this just returns first occurence i think
-seed_that_mapped_to_min_part1 = initial_seeds[minimum_location_part1_idx]
+   # i shouldn't build a list for part 2 since the ranges are absolutely massive
+   # to at least save on memory complexity, i'll keep track of the min as i go along
+#   min_location = None
+#   min_location_seed = None
+#   start_time = time.time()
+#   for seed_range in seed_ranges:
+#      # gotta iterate through every possible seed number in every range!
+#      for seed in range( seed_range[0], seed_range[0]+seed_range[1] ):
+#         location_val = map_seed_to_location( seed, mappings )
+#         if min_location == None:
+#            min_location = location_val
+#            min_location_seed = seed
+#         elif min_location > location_val:
+#            min_location = location_val
+#            min_location_seed = seed
+#         
+#         num_of_seeds_processed += 1
+#         updated_time = time.time() - start_time
+#         printProgressBar( num_of_seeds_processed, num_of_seeds_to_process, prefix=f'{num_of_seeds_processed:,} seeds processed out of {num_of_seeds_to_process:,}', suffix=f'time passed: {updated_time:.1f}s' )
 
-print(f'Part 1:\tMin Location: {minimum_location_part1}, (Possible) Corresponding Seed: {seed_that_mapped_to_min_part1}')
-print(f'Part 2:\tMin Location: {min_location}, (Possible) Corresponding Seed: {min_location_seed}')
+   min_locations_list = []
+   for seed_range in seed_ranges:
+      # create tuples
+      process_tuples_list = []
+      for i in range( seed_range[0], seed_range[0]+seed_range[1] ):
+         process_tuples_list.append( (i, mappings) )
+      pool = multiprocessing.Pool( )
+      min_locations_list.append( min( pool.starmap( map_seed_to_location, process_tuples_list ) ) )
+
+   # find min of locations list; its index will be the same as the index of the seed that mapped to it
+   minimum_location_part1 = min(locations_part1)
+   minimum_location_part1_idx = locations_part1.index(minimum_location_part1) # NOTE! min may not be unique; this just returns first occurence i think
+   seed_that_mapped_to_min_part1 = initial_seeds[minimum_location_part1_idx]
+
+   min_location_part2 = min(min_locations_list)
+
+   print(f'Part 1:\tMin Location: {minimum_location_part1}, (Possible) Corresponding Seed: {seed_that_mapped_to_min_part1}')
+   print(f'Part 2:\tMin Location: {min_location_part2}')
