@@ -143,6 +143,7 @@ with open(file_to_search, 'r') as puzzle_input:
 # td_roots = (1/2) * ( T +- sqrt( T^2 - 4*x_record ) ) ==> (T/2) +- sqrt(T^2 - 4*x_record)/2
 # and since we know our quadratic is concave down, we'll want to round up the lower root and round down the upper root
 
+### PART ONE ###
 TIME_ROW = 0
 DISTANCE_ROW = 1
 max_times = []
@@ -150,7 +151,7 @@ record_distances = []
 loop_skip_counter = 0
 
 # max times
-for char_idx, char in enumerate( puzzle_input_lines[TIME_ROW] ):
+for char_idx, char in enumerate( puzzle_input_lines[TIME_ROW].strip() ):
    # skip characters if applicable
    if loop_skip_counter > 0:
       loop_skip_counter -= 1
@@ -162,7 +163,7 @@ for char_idx, char in enumerate( puzzle_input_lines[TIME_ROW] ):
 
 # record distances
 loop_skip_counter = 0
-for char_idx, char in enumerate( puzzle_input_lines[DISTANCE_ROW] ):
+for char_idx, char in enumerate( puzzle_input_lines[DISTANCE_ROW].strip() ):
    # skip characters if applicable
    if loop_skip_counter > 0:
       loop_skip_counter -= 1
@@ -173,12 +174,12 @@ for char_idx, char in enumerate( puzzle_input_lines[DISTANCE_ROW] ):
    record_distances.append(int(distance))
 
 # find number of possiblities!
-num_of_possibilities = []
+num_of_possibilities_part1 = []
 for idx,max_time in enumerate( max_times ):
    # find roots of quadratic formed
    to_be_sqrt = max_time*max_time - 4*record_distances[idx]
    if to_be_sqrt < 0:
-      num_of_possibilities.append(0)
+      num_of_possibilities_part1.append(0)
       continue
    num_sqrt = math.sqrt(to_be_sqrt)
    root_upper = (max_time + num_sqrt)/2
@@ -191,15 +192,70 @@ for idx,max_time in enumerate( max_times ):
       range_lower = int(root_lower) + 1
    else:
       range_lower = int(root_lower + 1)
-   num_of_possibilities.append( range_upper - range_lower + 1 )
+   num_of_possibilities_part1.append( range_upper - range_lower + 1 )
 
 # multiply them all up for the answer submission
 product_of_possiblities = 1
-for possibility in num_of_possibilities:
+for possibility in num_of_possibilities_part1:
    product_of_possiblities *= possibility
 
 print(f'\n\nPart 1:\tProduct of Possibilities: {product_of_possiblities}')
-print(f'Part 2:\t')
+
+### PART TWO ###
+TIME_ROW = 0
+DISTANCE_ROW = 1
+max_times = []
+record_distances = []
+loop_skip_counter = 0
+
+# max time
+max_time_str = ''
+max_time = 0
+for char_idx, char in enumerate( puzzle_input_lines[TIME_ROW].strip() ):
+   # skip characters if applicable
+   if loop_skip_counter > 0:
+      loop_skip_counter -= 1
+      continue
+   ( max_time_sub_num, loop_skip_counter ) = get_next_num_in_line_starting_at_idx( puzzle_input_lines[TIME_ROW], char_idx )
+   if max_time_sub_num == '':
+      continue
+   max_time_str = max_time_str + str(max_time_sub_num)
+max_time = int(max_time_str)
+
+# record distance
+loop_skip_counter = 0
+record_distance_str = ''
+record_distance = 0
+for char_idx, char in enumerate( puzzle_input_lines[DISTANCE_ROW].strip() ):
+   # skip characters if applicable
+   if loop_skip_counter > 0:
+      loop_skip_counter -= 1
+      continue
+   ( record_distance_sub_num, loop_skip_counter ) = get_next_num_in_line_starting_at_idx( puzzle_input_lines[DISTANCE_ROW], char_idx )
+   if record_distance_sub_num == '':
+      continue
+   record_distance_str = record_distance_str + str(record_distance_sub_num)
+record_distance = int(record_distance_str)
+
+# find number of possiblities!
+num_of_possibilities_part2 = 0
+# find roots of quadratic formed
+to_be_sqrt = max_time*max_time - 4*record_distance
+if to_be_sqrt > 0:
+   num_sqrt = math.sqrt(to_be_sqrt)
+   root_upper = (max_time + num_sqrt)/2
+   root_lower = (max_time - num_sqrt)/2
+   if int(root_upper) == root_upper:
+      range_upper = int(root_upper) - 1
+   else:
+      range_upper = int(root_upper)
+   if int(root_lower) == root_lower:
+      range_lower = int(root_lower) + 1
+   else:
+      range_lower = int(root_lower + 1)
+num_of_possibilities_part2 = range_upper - range_lower + 1
+
+print(f'\n\nPart 2:\tNumber of Possiblities: {num_of_possibilities_part2}')
 
 program_end_time = time.time()
 total_program_time = program_end_time - program_start_time
