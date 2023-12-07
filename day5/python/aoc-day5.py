@@ -147,6 +147,8 @@ if len(sys.argv) < 2:
    # file_to_search = SUB_PUZZLE_INPUT
 elif sys.argv[1] == '0':
    file_to_search = TEST_INPUT
+elif sys.argv[1] == 'all':
+   file_to_search = PUZZLE_INPUT
 else:
    file_to_search = SUB_PUZZLE_INPUT_TUPLE[int(sys.argv[1]) - 1]
 with open(file_to_search, 'r') as puzzle_input:
@@ -272,7 +274,7 @@ for seed_range in seed_ranges:
          hh_mm_ss = updated_time_hh_mm_ss.split(':')
          printProgressBar( num_of_seeds_processed,\
                            num_of_seeds_to_process,\
-                           prefix=f'{num_of_seeds_processed:,}/{num_of_seeds_to_process:,}, minsofar: {min_location}',\
+                           prefix=f'{num_of_seeds_processed:,}/{num_of_seeds_to_process:,}, minsofar: {min_location:,}',\
                            suffix=f'time passed: {hh_mm_ss[0]}h {hh_mm_ss[1]}m {hh_mm_ss[2]}s' )
 
          
